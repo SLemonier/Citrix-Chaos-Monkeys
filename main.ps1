@@ -13,7 +13,7 @@ Test all the components
 This parameter is optionnal
 .Parameter TestLicenseServer
 Test Citrix license server
-Cannot work with -All parameter
+This parameter is optionnal
 .Parameter DeliveryController
  Specifiy the Delivery Controller to use for the provision
  This parameter is optionnal, by default it will use the local machine as the delivery controller
@@ -108,12 +108,14 @@ if($Prod){
         Write-Host "Chaos Monkey launched with -All parameter. All the components will be tested." -ForegroundColor Yellow
         Write-Host "Other parameter such as -Test**** will be ignored."
         Write-host "Starting License Server Chaos Monkey..."
-        . ./License-server/main.ps1 
+        . ./License-server/component.ps1 
     } else {
         if($TestLicenseServer){
             Write-Host "Chaos Monkey launched with -TestLicenseServer parameter." -ForegroundColor Yellow
             Write-host "Starting License Server Chaos Monkey..."
-            . ./License-server/main.ps1 
+            . ./License-server/component.ps1 
+        } else {
+            Write-Host "Chaos Monkey launched without parameter, Simians are sleeping. Your environment is safe..."
         }
     }
 }

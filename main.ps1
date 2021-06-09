@@ -20,10 +20,6 @@ This parameter is optionnal
  .Parameter Log
  Specifiy the output file for the logs.
  This parameter is optionnal, by default, it will create a file in the current directory
-
-
-
-
  .Example
  # Configure local machine to autolog the user leogetz with the password P@ssw0rd
  SetAutologon.ps1 -Account leogetz -Password P@ssw0rd
@@ -95,25 +91,27 @@ if(($DDC)){
 
 if($Prod){ 
     Write-Host "Chaos Monkey launched with -Prod parameter. -All and parameter such as -Test**** will be ignored." -ForegroundColor Yellow
-    Write-Host "Chaos Monkey will pick one component randomly to break."
+    Write-Host "Chaos Monkey will pick one component randomly to break." -ForegroundColor Yellow
     $AllAvailableTests = @(
-        "License-server",
-        "prout"
+        "License-server"
     )
     $Test = Get-Random -InputObject $AllAvailableTests
-    Write-host "Chaos Monkey chooses $test!"
-    . ./$test/main.ps1
+    Write-host "Chaos Monkey chose $test!"
+    . ./$test/component.ps1
+    Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
 } else {
     if($All){
         Write-Host "Chaos Monkey launched with -All parameter. All the components will be tested." -ForegroundColor Yellow
-        Write-Host "Other parameter such as -Test**** will be ignored."
+        Write-Host "Other parameter such as -Test**** will be ignored." -ForegroundColor Yellow
         Write-host "Starting License Server Chaos Monkey..."
         . ./License-server/component.ps1 
+        Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
     } else {
         if($TestLicenseServer){
             Write-Host "Chaos Monkey launched with -TestLicenseServer parameter." -ForegroundColor Yellow
             Write-host "Starting License Server Chaos Monkey..."
             . ./License-server/component.ps1 
+            Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
         } else {
             Write-Host "Chaos Monkey launched without parameter, Simians are sleeping. Your environment is safe..."
         }

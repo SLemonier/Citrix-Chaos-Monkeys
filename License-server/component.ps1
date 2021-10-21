@@ -4,13 +4,13 @@
 function ShutDownServer {
     Write-Host "Chaos Monkey will shut down the server"
     Write-Host "Shutting down server..." -NoNewline
-    Stop-Computer -ComputerName $LicenseServerName -Force | Out-Null
+    Stop-Computer -ComputerName $ServerName -Force | Out-Null
     $count = 0
-    while ((Test-Connection -ComputerName $LicenseServerName -quiet)) {
+    while ((Test-Connection -ComputerName $ServerName -quiet)) {
         Write-host "." -NoNewline
         Start-Sleep -Seconds 5
         if($count -eq 20){
-            Write-Host "Shutdown is taking a long time, please check $LicenseServerName's state." -ForegroundColor Yellow
+            Write-Host "Shutdown is taking a long time, please check $ServerName's state." -ForegroundColor Yellow
         }
         $count++
     }
@@ -25,7 +25,7 @@ function ShutDownServer {
 #Stop and disable service
 function StopAndDisableService {
     Write-Host "Chaos Monkey will stop and disable Citrix License service"
-    Invoke-Command -ComputerName $LicenseServerName -ScriptBlock {  
+    Invoke-Command -ComputerName $ServerName -ScriptBlock {  
         Write-Host  "Stopping Citrix Licensing service..." -NoNewline
         Stop-Service -Name "Citrix Licensing" -Force -WarningAction Ignore
         $count = 0
@@ -33,7 +33,7 @@ function StopAndDisableService {
             Write-host "." -NoNewline
             Start-Sleep -Seconds 5
             if($count -eq 20){
-                Write-Host "Stopping service is taking a long time, please check $LicenseServerName's state." -ForegroundColor Yellow
+                Write-Host "Stopping service is taking a long time, please check $ServerName's state." -ForegroundColor Yellow
             }
             $count++
         }
@@ -45,7 +45,7 @@ function StopAndDisableService {
             Write-host "." -NoNewline
             Start-Sleep -Seconds 5
             if($count -eq 20){
-                Write-Host "Disabling service is taking a long time, please check $LicenseServerName's state." -ForegroundColor Yellow
+                Write-Host "Disabling service is taking a long time, please check $ServerName's state." -ForegroundColor Yellow
             }
             $count++
         }
@@ -61,7 +61,7 @@ function StopAndDisableService {
 #Remove .lic files
 function RemoveLicFiles {
     Write-Host "Chaos Monkey will remove .lic files"
-    Invoke-Command -ComputerName $LicenseServerName -ScriptBlock { 
+    Invoke-Command -ComputerName $ServerName -ScriptBlock { 
         Write-Host "Saving Citrix Licensing files in C:\DoNotDelete..." -NoNewline
         if(!(Test-Path -Path "C:\DoNotDelete")){
             New-Item -ItemType Directory -Path "C:\DoNotDelete" -Force | Out-Null 
@@ -85,7 +85,7 @@ function RemoveLicFiles {
     Write-Host "- an alert regarding event ID 1151 and/or 1154 from source Citrix Broker Server on your delivery controller(s)"
     Write-Host "Licensing files were saved in C:\DoNotDelete folder."
     Read-Host "Press any key to continue once remediation is completed (Licensing files will be restored by the script)"
-    Invoke-Command -ComputerName $LicenseServerName -ScriptBlock { 
+    Invoke-Command -ComputerName $ServerName -ScriptBlock { 
         Write-Host "Restoring Citrix Licensing files..." -NoNewline
         Try{
             Move-Item -Path "C:\DoNotDelete\*.lic" -Destination "C:\Program Files (x86)\Citrix\Licensing\MyFiles\" | Out-Null
@@ -109,15 +109,15 @@ function RemoveLicFiles {
 #TODO disk space
 
 #Pick the name from the Get-BrokerSite output
-$LicenseServerName = (Get-BrokerSite).LicenseServerName
+$ServerName = (Get-BrokerSite).LicenseServerName
 
 #Valide Pre-requisites (e.g Remote PowerShell)
-Write-Host "Trying to communicate with $LicenseServerName... " -NoNewline
-If((Test-WSMan -ComputerName $LicenseServerName)){
+Write-Host "Trying to communicate with $ServerName... " -NoNewline
+If((Test-WSMan -ComputerName $ServerName)){
     Write-host "OK"-ForegroundColor Green
 } else {
     Write-Host "Failed" -ForegroundColor Red
-    Write-Host "Check Remote Powershell is enabled on $LicenseServerName" -ForegroundColor Red
+    Write-Host "Check Remote Powershell is enabled on $ServerName" -ForegroundColor Red
     Stop-Transcript 
     break
 }

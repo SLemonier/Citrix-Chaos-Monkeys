@@ -136,7 +136,6 @@ if($Prod){
     if($All){
         #Running all available test
         ShutDownServer
-        StopAndDisableOneService
         StopAndDisableAllService
         RemoveLicFiles
     } 

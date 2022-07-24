@@ -103,7 +103,7 @@ function RemoveLicFiles {
     Read-Host "Environment is restored to its previous state. Press any key to continue"
 }
 
-#TODO Corrupt .lic file
+#TODO Corrupt .lic files
 #TODO CPU Pikes
 #TODO Memory Pikes
 #TODO disk space

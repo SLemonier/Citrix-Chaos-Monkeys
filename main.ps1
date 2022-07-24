@@ -25,6 +25,7 @@ This parameter is optionnal
 [CmdletBinding()]
 Param(
     # Declaring input variables for the script
+    [Parameter(Mandatory=$false)] [string]$AdminAddress,
     [Parameter(Mandatory=$false)] [switch]$Prod,
     [Parameter(Mandatory=$false)] [switch]$all,
     [Parameter(Mandatory=$false)] [switch]$TestLicenseServer,
@@ -54,6 +55,7 @@ if(!(Add-PSSnapin Citrix* -ErrorAction SilentlyContinue -PassThru )){
     break
 }
 Write-Host "OK" -ForegroundColor Green
+Set-XDCredentials -ProfileType OnPrem #Avoid PowerShell SDK asking for credentials
 
 ##################################################################################################################################
 
@@ -83,14 +85,16 @@ if($Prod){
             Write-host "Starting License Server Chaos Monkey..."
             . ./License-server/component.ps1 
             Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
-        } else if($TestDeliveryController){
-            Write-Host "Chaos Monkey launched with -TestDeliveryControllerServer parameter." -ForegroundColor Yellow
-            Write-host "Starting Delivery Controller Server Chaos Monkey..."
-            . ./Delivery Controller-server/component.ps1 
-            Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
-        }
-        else {
-            Write-Host "Chaos Monkey launched without parameter, Simians are sleeping. Your environment is safe..."
+        } else{
+            if($TestDeliveryControllerServer){
+                Write-Host "Chaos Monkey launched with -TestDeliveryControllerServer parameter." -ForegroundColor Yellow
+                Write-host "Starting Delivery Controller Server Chaos Monkey..."
+                . ./Delivery Controller-server/component.ps1 
+                Write-Host "Chaos Monkey has finished its job!" -ForegroundColor Green
+            }
+            else {
+                Write-Host "Chaos Monkey launched without parameter, Simians are sleeping. Your environment is safe..."
+            }
         }
     }
 }

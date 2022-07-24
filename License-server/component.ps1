@@ -76,7 +76,7 @@ function RemoveLicFiles {
         } catch {Stop-Transcript;break}
         Write-Host " Done" -ForegroundColor Green
         Write-Host "Restarting Citrix Licensing Service..." -NoNewline
-        Restart-Service -Name "Citrix Licensing" -WarningAction Ignore
+        Restart-Service -Name "Citrix Licensing" - Force -WarningAction Ignore
         Write-Host " Done" -ForegroundColor Green
     }
     Write-Host "Citrix Licensing files were removed successfully. It's now time to check alerts are properly raised and teams are responding accordingly." -ForegroundColor Yellow
@@ -109,7 +109,7 @@ function RemoveLicFiles {
 #TODO disk space
 
 #Pick the name from the Get-BrokerSite output
-$ServerName = (Get-BrokerSite).LicenseServerName
+$ServerName = (Get-BrokerSite -AdminAddress $AdminAddress).LicenseServerName
 
 #Valide Pre-requisites (e.g Remote PowerShell)
 Write-Host "Trying to communicate with $ServerName... " -NoNewline
